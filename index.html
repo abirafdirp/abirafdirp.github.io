@@ -66,7 +66,9 @@ asdassd
                 _square.material.depthTest = false;
                 _square.translateX(x - 4);
                 _square.translateY(y - 4);
-                _square.material.opacity = 0.5;
+                _square.material.opacity = 0;
+                var maxOpacities = [0.1, 0.3, 0.5, 0.7];
+                _square.material.maxOpacity = maxOpacities[ Math.floor( Math.random() * maxOpacities.length )  ];
                 _square.material.transparent = true;
                 scene.add( _square );
                 squares.push(_square);
@@ -100,9 +102,7 @@ asdassd
     function animate() {
         stats.begin();
         renderer.setSize( window.innerWidth, window.innerHeight );
-        // calculate objects intersecting the picking ray
 
-        // update the picking ray with the camera and mouse position
         // raycaster.setFromCamera( mouse, camera );
         // var intersects = raycaster.intersectObjects ( scene.children, true );
         // var intersectedObjects = [];
@@ -115,7 +115,7 @@ asdassd
 
         for (var i = 0; i < 80; i++){
             var _square = squares[ Math.floor( Math.random() * squares.length )  ];
-            if (_square.material.opacity < 0.8){
+            if (_square.material.opacity < _square.material.maxOpacity){
                 _square.material.opacity += 0.02;
             }
         }
