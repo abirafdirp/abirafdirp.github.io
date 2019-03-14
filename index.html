@@ -8,12 +8,16 @@
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 </head>
 <body>
-<section id="landing">
-    <h1>ABIRAFDI RADITYA PUTRA</h1>
+<div id="landing">
+    <h1>LOREM IPSUM DAMET</h1>
     <h3>FREELANCE BACKEND DEVELOPER</h3>
-</section>
+    <div id="landing_links">
+        <strong>ABOUT</strong> <strong>WORK</strong> <strong>CONTACT</strong>
+    </div>
+</div>
+<div id="not_fancy_stuff">
+</div>
 <section id="content">
-asdassd
 </section>
 <script src="js/three.js"></script>
 <script src="js/stats.js"></script>
@@ -32,7 +36,6 @@ asdassd
     var mouse = {x: 0, y: 0};
     var windowHalfX = window.innerWidth / 2;
     var windowHalfY = window.innerHeight / 2;
-    var raycaster = new THREE.Raycaster();
     var nameRaycaster = new THREE.Raycaster();
     var mouseMoved = false;
 
@@ -43,33 +46,41 @@ asdassd
 
     function init() {
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
+        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 1000 );
         camera.position.z = 3;
 
         renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.setSize( window.innerWidth, window.innerHeight );
-        document.body.appendChild( renderer.domElement );
-        document.getElementById('landing').addEventListener('mousemove', onMouseMove, false);
+        var landing = document.getElementById('landing');
+        var notFancyStuff = document.getElementById('not_fancy_stuff');
+        notFancyStuff.appendChild( renderer.domElement );
+        landing.addEventListener('mousemove', onMouseMove, false);
         window.addEventListener( 'resize', onWindowResize, false );
     }
 
     function spawnMeshes() {
-        for (var x = 0; x < 9; x += 0.2) {
-            for (var y = 0; y < 9; y += 0.2) {
-                var geometry = new THREE.PlaneGeometry(0.2, 0.2, 0.2);
+        for (var x = 0; x < 9; x += 0.15) {
+            for (var y = 0; y < 9; y += 0.15) {
+                var geometry = new THREE.PlaneBufferGeometry(0.25, 0.25, 0.25);
                 var wireframe = new THREE.WireframeGeometry( geometry );
                 var material = new THREE.LineBasicMaterial({
                     color: 0x969393,
                     linewidth: 1
                 });
                 var _square = new THREE.LineSegments( wireframe, material );
+
                 _square.material.depthTest = false;
+                _square.material.transparent = true;
+
+                // placement
                 _square.translateX(x - 4);
                 _square.translateY(y - 4);
+
+                // opacity settings
                 _square.material.opacity = 0;
-                var maxOpacities = [0.1, 0.3, 0.5, 0.7];
+                var maxOpacities = [0.1, 0.3];
                 _square.material.maxOpacity = maxOpacities[ Math.floor( Math.random() * maxOpacities.length )  ];
-                _square.material.transparent = true;
+
                 scene.add( _square );
                 squares.push(_square);
             }
@@ -85,7 +96,8 @@ asdassd
 
         for (var i = 0; i < squares.length; i++){
             var _square = squares[i];
-            _square.rotation.y =  - newMouseX - mouse.y;
+            _square.rotation.y =  - newMouseX * 0.3 - newMouseY * 0.3;
+            _square.rotation.x =  - newMouseY * 0.1 - newMouseX * 0.1;
         }
         mouse.x = newMouseX;
         mouse.y = newMouseY;
@@ -113,19 +125,21 @@ asdassd
         //     intersectedObjects.push(intersects[i].object);
         // }
 
-        for (var i = 0; i < 80; i++){
+        for (var i = 0; i < 50; i++){
             var _square = squares[ Math.floor( Math.random() * squares.length )  ];
-            if (_square.material.opacity < _square.material.maxOpacity){
-                _square.material.opacity += 0.02;
+            if ( _square.material.opacity < _square.material.maxOpacity ){
+                _square.material.opacity += 0.04;
             }
+            else
+                _square.material.opacity -= 0.1;
         }
 
 
 
         nameRaycaster.setFromCamera( new THREE.Vector2(0, 0), camera );
-        var nameIntersectts = nameRaycaster.intersectObjects ( scene.children );
-        for ( var i = 0; i < nameIntersectts.length; i++ ) {
-            nameIntersectts[i].object.material.opacity = 0;
+        var nameIntersects = nameRaycaster.intersectObjects ( scene.children );
+        for ( var i = 0; i < nameIntersects.length; i++ ) {
+            nameIntersects[i].object.material.opacity = 0;
         }
 
         renderer.render( scene, camera );
